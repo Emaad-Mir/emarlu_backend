@@ -16,6 +16,7 @@ class DaterResource(Resource):  # User API operation for Create, Read.  THe Upda
             body = request.get_json()
 
             name = body.get('name')
+            uid = body.get('uid')
             gender = body.get('gender')
             age = body.get('age')
             interests = body.get('interests')
@@ -32,7 +33,7 @@ class DaterResource(Resource):  # User API operation for Create, Read.  THe Upda
 
             ''' #1: Key code block, setup USER OBJECT '''
             dater = Dater(name=name, 
-                      gender=gender, age=age, interests=interests)
+                      gender=gender, age=age, interests=interests, uid=uid)
             dater.create()
             
             ''' #2: Key Code block to add user to database '''
@@ -48,10 +49,20 @@ class DaterListResource(Resource):
             daters = Dater.query.all()    # read/extract all users from database
             json_ready = [dater.read() for dater in daters]
             return jsonify(json_ready)
+        
+class DeleteResource(Resource):
+        def delete(self, id):
+            dater = Dater.query.get(id)
+            if dater:
+                dater.delete()
+                return {'message': f'User with ID {id} deleted'}, 200
+            else:
+                return {'message': f'User with ID {id} not found'}, 404
 
     
 
             
-api.add_resource(DaterResource, '/dater')
-api.add_resource(DaterListResource, '/daters')
+api.add_resource(DaterResource, '/create')
+api.add_resource(DeleteResource, '/delete/<int:id>')
+api.add_resource(DaterListResource, '/')
 
