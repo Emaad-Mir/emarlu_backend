@@ -10,7 +10,7 @@ dating_api = Blueprint('dating_api', __name__,
 # API docs https://flask-restful.readthedocs.io/en/latest/api.html
 api = Api(dating_api)
 
-class DaterResource(Resource):  # User API operation for Create, Read.  THe Update, Delete methods need to be implemented
+class Create(Resource):  # User API operation for Create, Read.  THe Update, Delete methods need to be implemented
         def post(self): # Create method
             ''' Read data for json body '''
             body = request.get_json()
@@ -44,13 +44,19 @@ class DaterResource(Resource):  # User API operation for Create, Read.  THe Upda
             # failure returns error
             return {'message': f'Processed {name}, either a format error or name {name} is duplicate'}, 400
 
-class DaterListResource(Resource):
+class Read(Resource):
         def get(self): # Read Method
             daters = Dater.query.all()    # read/extract all users from database
             json_ready = [dater.read() for dater in daters]
             return jsonify(json_ready)
         
-class DeleteResource(Resource):
+class Update(Resource):
+        def put(self):
+            daters = Dater.query.all()    # read/extract all users from database
+            json_ready = [dater.read() for dater in daters]  # prepare output in json
+            return jsonify(json_ready)
+        
+class Delete(Resource):
         def delete(self, id):
             dater = Dater.query.get(id)
             if dater:
@@ -62,7 +68,9 @@ class DeleteResource(Resource):
     
 
             
-api.add_resource(DaterResource, '/create')
-api.add_resource(DeleteResource, '/delete/<int:id>')
-api.add_resource(DaterListResource, '/')
+api.add_resource(Create, '/create')
+api.add_resource(Read, '/')
+api.add_resource(Update, '/update')
+api.add_resource(Delete, '/delete/<int:id>')
+
 
