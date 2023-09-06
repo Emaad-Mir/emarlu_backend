@@ -10,6 +10,18 @@ dating_api = Blueprint('dating_api', __name__,
 # API docs https://flask-restful.readthedocs.io/en/latest/api.html
 api = Api(dating_api)
 
+def match_points(dic1, dic2):
+        points = 0
+        user1_int = [x.strip() for x in dic1["interests"].split("and")]
+        print(user1_int)
+        user2_int = [x.strip() for x in dic2["interests"].split("and")]
+        print(user2_int) 
+        for inter in user1_int:
+            for interest in user2_int:
+                if inter == interest:
+                    points+= 1
+        return points
+
 class Create(Resource):  # User API operation for Create, Read.  THe Update, Delete methods need to be implemented
         def post(self): # Create method
             ''' Read data for json body '''
@@ -65,6 +77,24 @@ class Delete(Resource):
             else:
                 return {'message': f'User with ID {id} not found'}, 404
 
+class Match(Resource):              
+     def get(self, id, threshold):
+        dater = Dater.query.get(id)
+        dates = []
+        if(dater):
+            all = Dater.query.all()
+            for date in all:
+                if date.id == dater.id:
+                     continue
+                else:
+                    point = match_points(dater.read(), date.read())
+                    if point >= threshold:
+                        dates.append(date)
+            return jsonify([dater.read() for dater in dates])
+        else:
+             return {'message': f'User with ID {id} not found'}, 404
+
+
     
 
             
@@ -72,5 +102,6 @@ api.add_resource(Create, '/create')
 api.add_resource(Read, '/')
 api.add_resource(Update, '/update')
 api.add_resource(Delete, '/delete/<int:id>')
+api.add_resource(Match, '/match/<int:id>/<int:threshold>')
 
 
