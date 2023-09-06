@@ -32,6 +32,8 @@ class Create(Resource):  # User API operation for Create, Read.  THe Update, Del
             gender = body.get('gender')
             age = body.get('age')
             interests = body.get('interests')
+            bio = body.get('bio')
+            password = body.get('password')
             
             ''' Avoid garbage in, error checking '''
             # validate name
@@ -45,7 +47,7 @@ class Create(Resource):  # User API operation for Create, Read.  THe Update, Del
 
             ''' #1: Key code block, setup USER OBJECT '''
             dater = Dater(name=name, 
-                      gender=gender, age=age, interests=interests, uid=uid)
+                      gender=gender, age=age, interests=interests, uid=uid, bio=bio, password=password)
             dater.create()
             
             ''' #2: Key Code block to add user to database '''

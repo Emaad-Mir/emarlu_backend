@@ -77,17 +77,21 @@ class Dater(db.Model):
     _gender = db.Column(db.String(255), unique=False, nullable=False)
     _age = db.Column(db.Integer, unique=False, nullable=False)
     _interests = db.Column(db.String(255), unique=False, nullable=False)
+    _bio = db.Column(db.String(255), unique = False, nullable=False)
+    _password = db.Column(db.String(255), unique = False, nullable=False)
 
     # Defines a relationship between User record and Notes table, one-to-many (one user to many notes)
     posts = db.relationship("Posting", cascade='all, delete', backref='daters', lazy=True)
 
     # constructor of a User object, initializes the instance variables within object (self)
-    def __init__(self, name, uid, gender, age, interests):
+    def __init__(self, name, uid, gender, age, interests, bio, password):
         self._name = name    # variables with self prefix become part of the object, 
         self._uid = uid
         self._gender = gender
         self._age = age
         self._interests = interests
+        self._bio = bio
+        self._password = password
 
     # a name getter method, extracts name from object
     @property
@@ -141,7 +145,24 @@ class Dater(db.Model):
     @interests.setter
     def interests(self, interests):
         self._interests = interests
-            
+
+    @property
+    def bio(self):
+        return self._bio
+    
+    # a setter function, allows name to be updated after initial object creation
+    @bio.setter
+    def bio(self, bio):
+        self._bio = bio
+    
+    @property
+    def password(self):
+        return self._password
+    
+    # a setter function, allows name to be updated after initial object creation
+    @password.setter
+    def password(self, password):
+        self._password = password
     # dob property is returned as string, to avoid unfriendly outcomes
     
     # output content using str(object) in human readable form, uses getter
@@ -170,12 +191,14 @@ class Dater(db.Model):
             "uid": self.uid,
             "gender": self.gender,
             "age": self.age,
-            "interests": self.interests
+            "interests": self.interests,
+            "bio": self.bio,
+            "password": self.password
         }
 
     # CRUD update: updates user name, password, phone
     # returns self
-    def update(self, name="", uid="", gender="", age: int=0, interests = []):
+    def update(self, name="", uid="", gender="", age: int=0, interests = [], bio = "", password =""):
         """only updates values with length"""
         if len(name) > 0:
             self.name = name
@@ -187,6 +210,11 @@ class Dater(db.Model):
             self.age = age
         if len(interests) > 0:
             self.interests = interests
+        if len(bio) > 0:
+            self.bio = bio
+        if len(password) > 5:
+            self.password = password
+
 
         
         db.session.commit()
@@ -209,8 +237,8 @@ def initDaters():
         """Create database and tables"""
         db.create_all()
         """Tester data for table"""
-        d1 = Dater(name='John Doe', uid='john', gender='male', age=26, interests="Comp Sci and stuff")
-        d2 = Dater(name='Jane Doe', uid='jane', gender='female',age=23, interests="Business and Bio")
+        d1 = Dater(name='John Doe', uid='john', gender='male', age=26, interests="Comp Sci and stuff", bio = "nerdy man", password = "qwerty123")
+        d2 = Dater(name='Jane Doe', uid='jane', gender='female',age=23, interests="Business and Bio", bio = "money woman", password ="lol123genz")
     
 
         daters = [d1, d2]
